@@ -4,6 +4,7 @@ import sys
 import nltk
 from nltk.corpus import stopwords
 import numpy as np
+import matplotlib.pyplot as plt 
 from sklearn.cluster import KMeans
 
 import time 
@@ -136,6 +137,18 @@ class TweetCluster(object):
 				ind = i
 		return ind
 
+	def PCA(self, tf_idf, axes):
+		mu = np.mean(tf_idf, axis=0)
+		reduced = np.zeros((tf_idf.shape[1], axes))
+		tf_idf_p = tf_idf - mu
+		cov = np.dot(tf_idf_p.T, tf_idf_p)
+		w, v = np.linalg.eig(cov)
+		sort = np.argsort(w)
+		for i in range(axes):
+			reduced[:,i] = v[:, sort[i]]
+		return reduced
+
+
 	def calcError(self, tf_idf, cluster, mean):
 		samp_to_mean = tf_idf[cluster] - mean
 		return (samp_to_mean * samp_to_mean).sum(axis=1).sum()
@@ -180,21 +193,50 @@ def printTweetsInCluster(tweets, cluster):
 	for ind in cluster:
 		print str(ind) + ':  ', tweets[ind]
 
+def graphTweets(tf_idf): 
+	eig_basis = cluster.PCA(tf_idf, 2)
+	transformed_tf_idf = np.dot(tf_idf, eig_basis)
+	plt.plot(transformed_tf_idf[:,0], transformed_tf_idf[:,1], 'ro')
+	plt.show()
+
 cluster = TweetCluster(sys.argv[1])
 tf_idf = cluster.getTfIdf()
 raw_tweets = cluster.getRawTweets()
 k = 10
 
 t0 = time.time()
-print 'Non Recursive Approach'
+print 'No PCA Non Recursive Approach'
 cluster_means, tweet_labels = cluster.kMeans(k, tf_idf)
 clusters_n = eval(cluster_means, tweet_labels, cluster)
 t1 = time.time()
 print 'time: ', t1 - t0
 
 t0 = time.time()
-print 'Recursive Approach'
+print 'No PCA Recursive Approach'
 cluster_means, tweet_labels = cluster.recursiveKMeans(k, tf_idf)
 clusters_r = eval(cluster_means, tweet_labels, cluster)
 t1 = time.time()
 print 'time: ', t1 - t0
+
+t0 = time.time()
+print 'PCA Non Recursive Approach'
+
+
+t1 = time.time()
+print 'time: ', t1 - t0
+
+t0 = time.time()
+print 'PCA Recursive Approach'
+
+
+t1 = time.time()
+print 'time: ', t1 - t0
+
+t0 = time.time()
+print 'PCA Recursive Approach with automatic K selection'
+
+
+t1 = time.time()
+print 'time: ', t1 - t0
+
+
