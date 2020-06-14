@@ -8,7 +8,7 @@ Make sure necesssary python libraries are installed:
   - nltk   
   - after intalling nltk, execute 'python -m nltk.downloader stopwords'  
 
-execute 'python TweetCluster.py csv_path'  
+execute 'python TweetCluster.py readDonaldTrump_tweets.csv'  
 Two instances will run over the dataset using two different approaches: a non-recursive approach to the k-means clustering and a recursive approach that subdvides the largest clusters recursively. The results will print in the console. Results include how many tweets are in each group, what the most significant values of a tweet are, and estimates of the error in each group. 
 
 # Implementation Details # 
