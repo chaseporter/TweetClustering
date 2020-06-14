@@ -36,11 +36,10 @@ class TweetCluster(object):
 						self.doc_words[word] = self.doc_words.get(word, 0) + 1
 						unique.add(word)
 		csvfile.close()
-		for word in self.doc_words.keys():
-			if self.doc_words[word] < 3:
-				del(self.doc_words[word])
+		delete = [key for key in self.doc_words if self.doc_words[key] < 3]
+		for key in delete: del self.doc_words[key]
 		self.tfIdf()
-		print 'unique words in tweets:', len(self.doc_words), '\n# of tweets:', len(self.sanitized_tweets)
+		print('unique words in tweets:', len(self.doc_words), '\n# of tweets:', len(self.sanitized_tweets))
 
 	""" Function for preprocessing tweets. Should include removing stop words as well. Removes all spaces,
 		words under a certain lenth, and unwanted punctuation. DOES NOT removes words that appear 
@@ -179,19 +178,19 @@ def eval(cluster_means, tweet_labels, cluster):
 		samp_to_mean = tf_idf[cluster_i] - cluster_means[i]
 		error = (samp_to_mean * samp_to_mean).sum(axis=1).sum()
 		total_error += error
-		print 'tweets in cluster', str(i) +':', str(len(cluster_i)) +';', 'error:', error
-	print 'total error:', total_error
+		print('tweets in cluster', str(i) +':', str(len(cluster_i)) +';', 'error:', error)
+	print('total error:', total_error)
 
 	n = 8
 	for i, cluster_mean in enumerate(cluster_means):
 		sig_words_indices = cluster_mean.argsort()[-n:][::-1]
 		sig_words = [inverse_np_word_index[ind] for ind in sig_words_indices]
-		print str(i) + ':', sig_words
+		print(str(i) + ':', sig_words)
 	return clusters
 
 def printTweetsInCluster(tweets, cluster):
 	for ind in cluster:
-		print str(ind) + ':  ', tweets[ind]
+		print(str(ind) + ':  ', tweets[ind])
 
 def graphTweets(tf_idf): 
 	eig_basis = cluster.PCA(tf_idf, 2)
@@ -205,38 +204,18 @@ raw_tweets = cluster.getRawTweets()
 k = 10
 
 t0 = time.time()
-print 'No PCA Non Recursive Approach'
+print('No PCA Non Recursive Approach')
 cluster_means, tweet_labels = cluster.kMeans(k, tf_idf)
 clusters_n = eval(cluster_means, tweet_labels, cluster)
 t1 = time.time()
-print 'time: ', t1 - t0
+print('time: ', t1 - t0)
 
 t0 = time.time()
-print 'No PCA Recursive Approach'
+print('No PCA Recursive Approach')
 cluster_means, tweet_labels = cluster.recursiveKMeans(k, tf_idf)
 clusters_r = eval(cluster_means, tweet_labels, cluster)
 t1 = time.time()
-print 'time: ', t1 - t0
+print('time: ', t1 - t0)
 
-t0 = time.time()
-print 'PCA Non Recursive Approach'
-
-
-t1 = time.time()
-print 'time: ', t1 - t0
-
-t0 = time.time()
-print 'PCA Recursive Approach'
-
-
-t1 = time.time()
-print 'time: ', t1 - t0
-
-t0 = time.time()
-print 'PCA Recursive Approach with automatic K selection'
-
-
-t1 = time.time()
-print 'time: ', t1 - t0
 
 
