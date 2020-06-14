@@ -1,4 +1,4 @@
-## To run ##
+# To run #
 Run on python3   
 
 Make sure necesssary python libraries are installed:   
@@ -8,10 +8,10 @@ Make sure necesssary python libraries are installed:
   - nltk   
   - after intalling nltk, execute 'python -m nltk.downloader stopwords'  
 
-execute 'python TweetCluster.py readDonaldTrump_tweets.csv'  
+execute 'python TweetCluster.py realDonaldTrump_tweets.csv'  
 Two instances will run over the dataset using two different approaches: a non-recursive approach to the k-means clustering and a recursive approach that subdvides the largest clusters recursively. The results will print in the console. Results include how many tweets are in each group, what the most significant values of a tweet are, and estimates of the error in each group. 
 
-# Implementation Details # 
+## Implementation Details ##
 
 First steps: 
 vectorized the words in the tweets:
@@ -25,7 +25,7 @@ created a tf-idf statistic over the words in the tweets:
 Tweets were clustered using k-means clustering over the generated tf-idf statistic. The basics of a k-mean clustering algorithm are to randomly generate k vectors in the feature space that act as "centroids". Then, each data point is assigned to the centroid that it is closest to. Next, the centroid values themselves are updated based on the average value of the data in its cluster. Finally the data is reassigned based on the new value of the centroids until the sorting stabilizes.   
 
 
-# Recursive K-Means implementation #
+## Recursive K-Means implementation ##
 I noticed a problem of initializing k clusters for k means: 
 		unstable solutions: everytime ran, could get dramatically different results
 		because of the large feature space (d of up to 2000 in the case of tweets alone which will have a limited word space)
@@ -41,13 +41,13 @@ I noticed a problem of initializing k clusters for k means:
 	results are more indicative of "what are the top k topics"  
 
 
-# PCA and graphing #
+## PCA and graphing ##
 	want to see if it would be possible to visually see clusters by looking at only the top 2 or 3 most significant axes to the variance of the data. There isn't enough differentiation it seems at only 2 features to really set the tweets apart. points all just on top of each other. 
 	Thought PCA might still be useful for getting more stable results: 
 		do a PCA first and then remove dimensions that do not meet a certain threshold of significance to the variance of the data as a whole. 
 	
 
-# TO DO / IDEAS #
+## TO DO / IDEAS ##
 	read about other ways to create stable solutions for k means
 	how to algorithmically determine the best k to use:
 		track the derivative of the loss, once it stops dropping at a certain rate of its steepest descent seen, stop iterating k. 
